@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnimateParticles", "AnimateParticles\AnimateParticles.vcxproj", "{CD5E5614-4DBC-4FC5-8AD0-2B9B8A667F89}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD5E5614-4DBC-4FC5-8AD0-2B9B8A667F89}.Debug|x64.ActiveCfg = Debug|x64
+		{CD5E5614-4DBC-4FC5-8AD0-2B9B8A667F89}.Debug|x64.Build.0 = Debug|x64
+		{CD5E5614-4DBC-4FC5-8AD0-2B9B8A667F89}.Debug|x86.ActiveCfg = Debug|Win32
+		{CD5E5614-4DBC-4FC5-8AD0-2B9B8A667F89}.Debug|x86.Build.0 = Debug|Win32
+		{CD5E5614-4DBC-4FC5-8AD0-2B9B8A667F89}.Release|x64.ActiveCfg = Release|x64
+		{CD5E5614-4DBC-4FC5-8AD0-2B9B8A667F89}.Release|x64.Build.0 = Release|x64
+		{CD5E5614-4DBC-4FC5-8AD0-2B9B8A667F89}.Release|x86.ActiveCfg = Release|Win32
+		{CD5E5614-4DBC-4FC5-8AD0-2B9B8A667F89}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4FB5272F-3EC4-49A6-82FC-F4F5E5CBB2E0}
+	EndGlobalSection
+EndGlobal
