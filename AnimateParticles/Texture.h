@@ -8,6 +8,7 @@
 
 namespace ML {
 	enum ImageFormatEnum { JPG, PNG, PNG_ALPHA };
+
 	class Texture
 	{
 	public:

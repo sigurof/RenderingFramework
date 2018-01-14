@@ -40,6 +40,7 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GraphicsEngine.h" />
+    <ClInclude Include="Program.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Loader.h" />

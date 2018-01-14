@@ -64,8 +64,6 @@ namespace ML {
 		}
 
 		//Renderer(const Renderer& rend) : Renderer(rend) {}
-
-
 		//Renderer(const Window* par) : Renderer(par, StaticShader()) { }
 		//
 		//Renderer(const Window* par, const StaticShader& shad) : parentWindow(par), shader(shad)
@@ -98,7 +96,6 @@ namespace ML {
 		{
 			shader->cleanUp();
 		}
-
 
 		void prepare(float r, float g, float b, float alpha) const
 		{

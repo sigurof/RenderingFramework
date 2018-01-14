@@ -14,12 +14,14 @@
 #include "StaticShader.h"
 #include "Animator.h"
 
+#include "Program.h"
 
 using namespace ML;
 
 const std::string SHADERPATH = "C:\\Users\\Sigurd\\Documents\\GitHub\\OpenGL\\learnopengl\\learnopengl\\shader_source\\";
 const std::string StaticShader::VERTEXPATH =   "C:\\Users\\Sigurd\\Documents\\GitHub\\OpenGL\\learnopengl\\learnopengl\\shader_source\\static.vs";
 const std::string StaticShader::FRAGMENTPATH = "C:\\Users\\Sigurd\\Documents\\GitHub\\OpenGL\\learnopengl\\learnopengl\\shader_source\\static.fs";
+const std::string simulationFile = "C:\\Users\\Sigurd\\Documents\\GitHub\\ParticlesInBox\\RigidBody\\ParticlesInBox\\newtwo.pos";
 
 
 
@@ -28,7 +30,16 @@ int main()
 {
 	try
 	{
-		std::string simulationFile = "C:\\Users\\Sigurd\\Documents\\GitHub\\ParticlesInBox\\RigidBody\\ParticlesInBox\\newtwo.pos";
+		//Program p;
+		//p.load(simulationFile); // or
+		//p.open("Animate Particles");
+		//p.run();
+
+
+
+		/* writes: error! No  */
+		
+
 		Animator anim(simulationFile);
 		//anim.play();
 		anim.setCameraPosition(glm::vec3(0, 0, -6));
@@ -37,32 +48,6 @@ int main()
 		anim.setFrameRate(25);
 		//anim.hideBox();
 		anim.play();
-		//anim.drawSingleFrame(0);
-		//
-		//Window window(1920, 1080, "OpenGL");
-		//Loader loader;
-		////RenderObject model = loader.loadToVAO(cubeVertices, cubeTextureCoords, cubeIndices);
-		//Light light(glm::vec3(200, 200, -200), glm::vec3(1, 1, 1));
-		//Camera camera(&window);
-		//RenderObject model = OBJLoader::loadObjModel(OBJECTPATH + "sphere.obj", loader);
-		//ModelTexture texture(loader.loadTexture(TEXTUREPATH + "gold.png", ImageFormat::PNG), 1, 100);
-		//Model staticModel(model, texture);
-		//Entity* entity = new Entity(staticModel, glm::vec3(0, 0, -50), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-		//MasterRenderer renderer(&window);
-		//renderer.processEntity(entity);
-		//while (window.isOpen())
-		//{
-		//	currentTime = (float)glfwGetTime(); camera.setDt(currentTime-lastTime); lastTime = currentTime;
-		//	camera.move();
-		//	renderer.render(light, camera);
-		//	window.processInput();
-		//	window.draw();
-		//	window.pollEvent();
-		//}
-		//renderer.cleanUp();
-		//loader.cleanUp();
-		//
-		//glfwTerminate();
 	}
 	catch (const std::exception& err)
 	{
