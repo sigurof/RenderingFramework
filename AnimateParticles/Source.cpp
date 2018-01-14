@@ -31,9 +31,10 @@ int main()
 		std::string simulationFile = "C:\\Users\\Sigurd\\Documents\\GitHub\\ParticlesInBox\\RigidBody\\ParticlesInBox\\newtwo.pos";
 		Animator anim(simulationFile);
 		//anim.play();
-		anim.setCameraPosition(glm::vec3(0, 0, -3));
+		anim.setCameraPosition(glm::vec3(0, 0, -6));
 		anim.setLightPosition(glm::vec3(0, 200, 0));
-		anim.setFrameRate(24);
+		
+		anim.setFrameRate(25);
 		//anim.hideBox();
 		anim.play();
 		//anim.drawSingleFrame(0);

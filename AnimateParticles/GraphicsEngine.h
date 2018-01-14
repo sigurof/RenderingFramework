@@ -189,7 +189,6 @@ public:
 	void pollUserInput() {
 		window.pollEvent();
 		window.processInput();
-
 	}
 
 	void cleanUp() {
