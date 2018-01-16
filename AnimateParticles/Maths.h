@@ -1,12 +1,7 @@
 #ifndef MATHS_H
 #define MATHS_H
 #pragma once
-//#include <glm-0.9.8.5\glm\glm.hpp>
-//#include "Camera.h"
 
-//#include <glm-0.9.8.5\glm/glm.hpp>
-#include <glm-0.9.8.5\glm/gtc/matrix_transform.hpp>
-//#include <glm-0.9.8.5\glm/gtc/type_ptr.hpp>
 
 
 namespace ML {
@@ -23,15 +18,12 @@ namespace ML {
 			return matrix;
 		}
 
-		static glm::mat4 createViewMatrix(const Camera& camera)
+		static glm::mat4 createViewMatrix(const std::shared_ptr<Camera> camera)
 		{
-			glm::mat4 viewMatrix = glm::lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
-			//glm::mat4 viewMatrix;
-			//viewMatrix = glm::rotate(viewMatrix, (float)glm::radians(camera.getPitch()), glm::vec3(1, 0, 0));
-			//viewMatrix = glm::rotate(viewMatrix, (float)glm::radians(camera.getYaw()), glm::vec3(0, 1, 0));
-			//viewMatrix = glm::rotate(viewMatrix, (float)glm::radians(camera.getRoll()), glm::vec3(0, 0, 1));
-			//viewMatrix = glm::translate(viewMatrix, -camera.getPosition());
-			/*TODO: ADD ROLL AS WELL*/
+			glm::mat4 viewMatrix = glm::lookAt(camera->getPosition(), camera->getTarget(), camera->getUpDirection());
+			return viewMatrix;
+			
+			//glm::mat4 viewMatrix = glm::lookAt(Camera::currentlyActiveCamera->getPosition(), Camera::currentlyActiveCamera->getTarget(), Camera::currentlyActiveCamera->getUpDirection());
 			return viewMatrix;
 		}
 

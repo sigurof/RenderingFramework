@@ -1,14 +1,7 @@
 #ifndef LOADER_H
 #define LOADER_H
 #pragma once
-//#include <iostream>
-//#include <assert.h>
-//#include <glad\glad.h>
-//#include <GLFW\glfw3.h>
-//#include <vector>
-//#include "MeshIdentifier.h"
-//#include "Texture.h"
-#include "Texture.h"
+
 
 namespace ML {
 
@@ -34,7 +27,7 @@ namespace ML {
 		
 		MeshIdentifier loadToVAO(std::vector<float>& vertices, std::vector<float>& textureCoords, std::vector<float>& normals, std::vector<unsigned int>& indices) {
 			unsigned int* vaoID = createVAO();
-			vaos.push_back(vaoID);
+			vaos.push_back(vaoID);	
 			bindIndicesBuffer(indices);
 			storeDataInAttributeList(0, 3, vertices);
 			storeDataInAttributeList(1, 2, textureCoords);

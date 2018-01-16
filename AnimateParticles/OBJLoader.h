@@ -1,10 +1,8 @@
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 #pragma once
-//#include <iostream>
-//#include <string>
-#include "Clock.h"
-#include "Loader.h"
+
+
 namespace ML {
 
 	class OBJLoader

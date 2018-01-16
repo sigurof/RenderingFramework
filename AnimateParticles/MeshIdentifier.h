@@ -1,11 +1,7 @@
 #ifndef MESHIDENTIFIER_H
 #define MESHIDENTIFIER_H
 #pragma once
-//#include <iostream>
-//#include <assert.h>
-//#include <glad\glad.h>
-//#include <GLFW\glfw3.h>
-//#include <vector>
+
 
 namespace ML {
 

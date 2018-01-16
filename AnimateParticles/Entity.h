@@ -1,9 +1,6 @@
 #ifndef ENTITY_H
 #define ENTITY_H
-#pragma once/*
-#include <glm-0.9.8.5\glm\glm.hpp>
-#include "Model.h"*/
-#include "Model.h"
+#pragma once
 
 namespace ML {
 	class Entity

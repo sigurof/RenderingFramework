@@ -1,22 +1,11 @@
 #ifndef SURFACE_H
 #define SURFACE_H
+#pragma once
 
-//
-//
-//#include <glm-0.9.8.5\glm/glm.hpp>
-//#include <glm-0.9.8.5\glm/gtc/matrix_transform.hpp>
-//#include <glm-0.9.8.5\glm/gtc/type_ptr.hpp>
-//#include "Color.h"
-//#include "Texture.h"
-#include "ModelTexture.h"
-#include "Color.h"
 
 namespace ML {
 
-	enum SurfaceEnum
-	{
-		ColorType, TextureType, ColoredTextureType, None
-	};
+
 
 	class Surface
 	{

@@ -1,16 +1,9 @@
 #ifndef COLOR_H
 #define COLOR_H
-//
-//#include <glm-0.9.8.5\glm/glm.hpp>
-//#include <glm-0.9.8.5\glm/gtc/matrix_transform.hpp>
-//#include <glm-0.9.8.5\glm/gtc/type_ptr.hpp>
 
 namespace ML {
 
-	enum ColorEnum
-	{
-		RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, WHITE, BLACK, ORANGE, PINK, PURPLE
-	};
+
 
 	class Color
 	{
@@ -29,37 +22,37 @@ namespace ML {
 		Color(ColorEnum color, float a) : alpha(a) {
 			switch (color)
 			{
-			case ML::RED:
+			case RED:
 				rgb = glm::vec3(1, 0, 0);
 				break;
-			case ML::GREEN:
+			case GREEN:
 				rgb = glm::vec3(0, 1, 0);
 				break;
-			case ML::BLUE:
+			case BLUE:
 				rgb = glm::vec3(0, 0, 1);
 				break;
-			case ML::CYAN:
+			case CYAN:
 				rgb = glm::vec3(0, 1, 1);
 				break;
-			case ML::MAGENTA:
+			case MAGENTA:
 				rgb = glm::vec3(1, 0, 1);
 				break;
-			case ML::YELLOW:
+			case YELLOW:
 				rgb = glm::vec3(1, 1, 0);
 				break;
-			case ML::WHITE:
+			case WHITE:
 				rgb = glm::vec3(1, 1, 1);
 				break;
-			case ML::BLACK:
+			case BLACK:
 				rgb = glm::vec3(0, 0, 0);
 				break;
-			case ML::ORANGE:
+			case ORANGE:
 				rgb = glm::vec3(1, 1 / 2, 0);
 				break;
-			case ML::PINK:
+			case PINK:
 				rgb = glm::vec3(1, 102 / 255, 1);
 				break;
-			case ML::PURPLE:
+			case PURPLE:
 				rgb = glm::vec3(172 / 255, 77 / 255, 175 / 255);
 				break;
 			default:

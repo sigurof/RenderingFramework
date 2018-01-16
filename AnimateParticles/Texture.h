@@ -2,12 +2,10 @@
 #define TEXTURE_H
 #pragma once/*
 #include <string>*/
-#include "stb_image.h"
 
 
 
 namespace ML {
-	enum ImageFormatEnum { JPG, PNG, PNG_ALPHA };
 
 	class Texture
 	{
@@ -15,13 +13,13 @@ namespace ML {
 		Texture(const std::string& path, ImageFormatEnum format) : path(path), format(format) {
 			switch (format)
 			{
-			case ML::JPG:
+			case JPG:
 				data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
 				break;
-			case ML::PNG:
+			case PNG:
 				data = stbi_load(path.c_str(), &width, &height, &nrChannels, STBI_rgb);
 				break;
-			case ML::PNG_ALPHA:
+			case PNG_ALPHA:
 				data = stbi_load(path.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
 				break;
 			default:
@@ -37,7 +35,7 @@ namespace ML {
 			glBindTexture(GL_TEXTURE_2D, ID);
 			switch (format)
 			{
-			case ML::PNG_ALPHA:
+			case PNG_ALPHA:
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 				break;
 			default:

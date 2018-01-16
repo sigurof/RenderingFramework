@@ -1,20 +1,7 @@
 // learnopengl.cpp : Defines the entry point for the console application.
 //
 
-
-//#include <string>
-//#include "StaticShader.h"
-//#include "Animator.h"
-
-
-#include <iostream>
-#include <vector>
-#include <string>
-
-#include "StaticShader.h"
-#include "Animator.h"
-
-#include "Program.h"
+#include "stdafx.h"
 
 using namespace ML;
 
@@ -23,6 +10,11 @@ const std::string StaticShader::VERTEXPATH =   "C:\\Users\\Sigurd\\Documents\\Gi
 const std::string StaticShader::FRAGMENTPATH = "C:\\Users\\Sigurd\\Documents\\GitHub\\OpenGL\\learnopengl\\learnopengl\\shader_source\\static.fs";
 const std::string simulationFile = "C:\\Users\\Sigurd\\Documents\\GitHub\\ParticlesInBox\\RigidBody\\ParticlesInBox\\newtwo.pos";
 
+Camera* Camera::currentlyActiveCamera = nullptr;
+Window* Window::currentlyActiveWindow = nullptr;
+Renderer* Renderer::currentlyActiveRenderer = nullptr;
+Program* Program::currentlyActiveProgram = nullptr;
+
 
 
 
@@ -30,24 +22,12 @@ int main()
 {
 	try
 	{
-		//Program p;
-		//p.load(simulationFile); // or
-		//p.open("Animate Particles");
-		//p.run();
+		Program p;
+		p.makeSceneFromPlaybackData(simulationFile);
+		p.shouldPlay();
+		p.openViewPort("OpenGL", 1920, 1080);
+		p.run();
 
-
-
-		/* writes: error! No  */
-		
-
-		Animator anim(simulationFile);
-		//anim.play();
-		anim.setCameraPosition(glm::vec3(0, 0, -6));
-		anim.setLightPosition(glm::vec3(0, 200, 0));
-		
-		anim.setFrameRate(25);
-		//anim.hideBox();
-		anim.play();
 	}
 	catch (const std::exception& err)
 	{
@@ -55,13 +35,6 @@ int main()
 	}
 	return 0;
 }
-
-
-
-
-
-
-
 
 
 

@@ -2,7 +2,6 @@
 #define CLOCK_H
 #pragma once
 
-#include <chrono>
 
 namespace ML {
 
@@ -12,23 +11,23 @@ namespace ML {
 	public:
 		Clock() : begin(std::chrono::system_clock::now()), end(std::chrono::system_clock::now()) {}
 
-		void reset() {
-			begin = std::chrono::system_clock::now();
-			end = std::chrono::system_clock::now();
-		}
+		//void reset() {
+		//	begin = std::chrono::system_clock::now();
+		//	end = std::chrono::system_clock::now();
+		//}
 
 		void start() {
 			begin = std::chrono::system_clock::now();
 		}
 
-		int elapsedMs() {
-			end = std::chrono::system_clock::now();
-			return (int)std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-		
+		int elapsedMs() const
+		{
+			return (int)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - begin).count();
 		}
 
-		float elapsedS() {
-			return  (float)elapsedMs() / 1000.f;
+		float elapsedS() const 
+		{
+			return (float)elapsedMs() / 1000.f;
 		}
 
 	private:

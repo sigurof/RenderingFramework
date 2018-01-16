@@ -1,11 +1,6 @@
 #ifndef MODEL_H
 #define MODEL_H
 #pragma once
-//#include "MeshIdentifier.h"
-//#include "ModelTexture.h"
-//#include "Color.h"
-//#include "Surface.h"
-#include "MeshIdentifier.h"
 
 
 namespace ML {
@@ -17,16 +12,47 @@ namespace ML {
 
 		Model(const Model& m) : rawModel(m.getRawModel()), drawMode(m.getDrawMode()), surface(m.getSurface()) {}
 
-		Model(const MeshIdentifier& type, const ModelTexture& texture, GLenum drawMode, float damper, float refl) : rawModel(type), surface(texture, damper, refl) , drawMode(drawMode) {}
-		Model(const MeshIdentifier& type, const Color& color, GLenum drawMode, float damper, float refl) : rawModel(type), surface(color, damper, refl) , drawMode(drawMode) {}
-
-		Model(const MeshIdentifier& type, const ModelTexture& texture, GLenum drawMode) : Model(type, texture, drawMode, 1 / 2, 1 / 2) {}
-		Model(const MeshIdentifier& type, const Color& color, GLenum drawMode) : Model(type, color, drawMode, 1 / 2, 1 / 2) {}
+		Model(std::shared_ptr<MeshIdentifier> mesh, const ModelTexture& texture, GLenum drawMode, float damper, float refl) : rawModel(mesh), surface(texture, damper, refl), drawMode(drawMode) {}
+		Model(std::shared_ptr<MeshIdentifier> mesh, const Color& color, GLenum drawMode, float damper, float refl) :
+			rawModel(mesh), surface(color, damper, refl), drawMode(drawMode)
+		{
 		
-		Model(const MeshIdentifier& type, const ModelTexture& texture) : Model(type, texture, GL_TRIANGLES) { }
-		Model(const MeshIdentifier& type, const Color& color) : Model(type, color, GL_TRIANGLES) {}
+		}
+		
+		//Model(const MeshIdentifier& type, const ModelTexture& texture, GLenum drawMode, float damper, float refl) : rawModel(type), surface(texture, damper, refl) , drawMode(drawMode) {}
+		//Model(const MeshIdentifier& type, const Color& color, GLenum drawMode, float damper, float refl) : rawModel(type), surface(color, damper, refl) , drawMode(drawMode) {}
+		
+		Model(std::shared_ptr<MeshIdentifier> mesh, const ModelTexture& texture, GLenum drawMode) : Model(mesh, texture, drawMode, 1 / 2, 1 / 2) {}
+		Model(std::shared_ptr<MeshIdentifier> mesh, const Color& color, GLenum drawMode) : Model(mesh, color, drawMode, 1 / 2, 1 / 2) {}
+		
+		//Model(const MeshIdentifier& type, const ModelTexture& texture, GLenum drawMode) : Model(type, texture, drawMode, 1 / 2, 1 / 2) {}
+		//Model(const MeshIdentifier& type, const Color& color, GLenum drawMode) : Model(type, color, drawMode, 1 / 2, 1 / 2) {}
+		
+		Model(std::shared_ptr<MeshIdentifier> mesh, const ModelTexture& texture) : Model(mesh, texture, GL_TRIANGLES) { }
+		Model(std::shared_ptr<MeshIdentifier> mesh, const Color& color) : Model(mesh, color, GL_TRIANGLES) {}
 
-		const MeshIdentifier& getRawModel() const { return rawModel; }
+		//Model(const MeshIdentifier& type, const ModelTexture& texture) : Model(type, texture, GL_TRIANGLES) { }
+		//Model(const MeshIdentifier& type, const Color& color) : Model(type, color, GL_TRIANGLES) {}
+
+
+
+
+
+
+		//Model(MeshIdentifier* mesh, const ModelTexture& texture, GLenum drawMode, float damper, float refl) : rawModel(mesh), surface(texture, damper, refl), drawMode(drawMode) {}
+		//Model(MeshIdentifier* mesh, const Color& color, GLenum drawMode, float damper, float refl) : rawModel(mesh), surface(color, damper, refl), drawMode(drawMode) {}
+		//Model(MeshIdentifier* mesh, const ModelTexture& texture, GLenum drawMode) : Model(mesh, texture, drawMode, 1 / 2, 1 / 2) {}
+		//Model(MeshIdentifier* mesh, const Color& color, GLenum drawMode) : Model(mesh, color, drawMode, 1 / 2, 1 / 2) {}
+		//Model(MeshIdentifier* mesh, const ModelTexture& texture) : Model(mesh, texture, GL_TRIANGLES) { }
+		//Model(MeshIdentifier* mesh, const Color& color) : Model(mesh, color, GL_TRIANGLES) {}
+
+
+
+
+
+		std::shared_ptr<MeshIdentifier> getRawModel() const { return rawModel; }
+		//MeshIdentifier* getRawModel() const { return rawModel; }
+		
 		const Surface& getSurface() const { return surface; }
 		GLenum getDrawMode() const { return drawMode; }
 
@@ -38,14 +64,15 @@ namespace ML {
 		
 
 	private:
-		MeshIdentifier rawModel;
+//		MeshIdentifier* rawModel;
+		std::shared_ptr<MeshIdentifier> rawModel;
 		GLenum drawMode;
 		Surface surface;
 	};
 
-	inline bool operator==(const ML::Model& lhs, const ML::Model& rhs) { return lhs.getRawModel().getVertexCount() == rhs.getRawModel().getVertexCount(); }
+	inline bool operator==(const ML::Model& lhs, const ML::Model& rhs) { return lhs.getRawModel()->getVertexCount() == rhs.getRawModel()->getVertexCount(); }
 	inline bool operator!=(const ML::Model& lhs, const ML::Model& rhs) { return !operator==(lhs, rhs); }
-	inline bool operator< (const ML::Model& lhs, const ML::Model& rhs) { return lhs.getRawModel().getVertexCount() < rhs.getRawModel().getVertexCount(); }
+	inline bool operator< (const ML::Model& lhs, const ML::Model& rhs) { return lhs.getRawModel()->getVertexCount() < rhs.getRawModel()->getVertexCount(); }
 	inline bool operator> (const ML::Model& lhs, const ML::Model& rhs) { return  operator< (rhs, lhs); }
 	inline bool operator<=(const ML::Model& lhs, const ML::Model& rhs) { return !operator> (lhs, rhs); }
 	inline bool operator>=(const ML::Model& lhs, const ML::Model& rhs) { return !operator< (lhs, rhs); }

@@ -2,48 +2,78 @@
 #define ANIMATOR_H
 #pragma once
 
-#include "GraphicsEngine.h"
-#include <fstream>
-#include <sstream>
-#include "MeshIdentifier.h"
 
 using namespace ML;
+template <class T>
+using sptr = std::shared_ptr<T>;
 
 class Animator
 {
 public:
 
-	Animator() : Animator("pos") { }
+	//Animator() : Animator("pos") { }
+	//
+	//Animator(const std::string& path) : Animator(path, GraphicsEngine()) {}
+	//
+	//Animator(const std::string& path, const GraphicsEngine& graphicsEngine) : path(path), ge(graphicsEngine), running(false)
+	//{
+	//	try
+	//	{
+	//		ge.openWindow(1920, 1080);
+	//		load(path);
+	//		t = times[0];
+	//		makeEntities();
+	//		//ge.loadEntities(entities);
+	//
+	//	}
+	//	catch (const std::exception& err)
+	//	{
+	//		std::cout << "In Animator(const std::string& path, GraphicsEngine& graphicsEngine):\n";
+	//		throw(err);
+	//	}
+	//}
 
-	Animator(const std::string& _path) : Animator(_path, GraphicsEngine()) {}
 
-	Animator(const std::string& _path, const GraphicsEngine& graphicsEngine) : path(_path), ge(graphicsEngine)
-	{
+	Animator(const std::string& path) {
 		try
 		{
-			ge.openWindow(1920, 1080);
-			load(_path);
-			t = times[0];
-			makeEntities();
-			//ge.loadEntities(entities);
-
+			load(path);
 		}
 		catch (const std::exception& err)
 		{
-			std::cout << "In Animator(const std::string& _path, GraphicsEngine& graphicsEngine):\n";
+			std::cout << "In Animator(const std::string& path, GraphicsEngine& graphicsEngine):\n";
 			throw(err);
 		}
 	}
 
-	void setLightPosition(const glm::vec3& pos) {
-		this->ge.setLightPosition(pos);
+	Animator(const Animator&) = delete;
+
+	Animator& operator=(const Animator&) = delete;
+
+	sptr<Scene> initializeScene() {
+		sptr<Scene> scene = sptr<Scene>(new Scene);
+		for (unsigned int i = 0; i < nDynamicParticles; i++)
+		{
+			scene->addEntity(dynamicTypes[i], Color(ColorEnum::BLUE), dynamicData[0][i], dynamicAngles[i], dynamicScales[i], true);
+			animateEntities.push_back(scene->getEntities()[i]);
+			assert(scene->getEntities()[i].use_count() == 2);
+		}
+		for (unsigned int i = 0; i < nStaticParticles; i++)
+		{
+			scene->addEntity(staticTypes[i], Color(ColorEnum::YELLOW, 0.4f), staticData[i], staticAngles[i], staticScales[i], false);
+		}
+		return scene;
 	}
 
-	void load(const std::string& _path) {
+	//void setLightPosition(const glm::vec3& pos) {
+	//	this->ge.setLightPosition(pos);
+	//}
+
+	void load(const std::string& path) 
+	{
 		try
 		{
 			/* Set path */
-			//this->path = _path;
 			std::ifstream ifile(path);
 			if (ifile.good())
 			{
@@ -67,27 +97,26 @@ public:
 		}
 	}
 
-	void setCameraPosition(const glm::vec3& pos) {
-		ge.setCameraPosition(pos);
-	}
-
-	void drawSingleFrame(unsigned int i_time)
-	{
-		try
-		{
-			while (ge.windowIsOpen())
-			{
-				ge.drawScene();
-				ge.pollUserInput();
-			}
-			ge.cleanUp();
-		}
-		catch (const std::exception& err)
-		{
-			std::cout << "In Animator::drawSingleFrame():\n";
-			throw err;
-		}
-	}
+	//void setCameraPosition(const glm::vec3& pos) {
+	//	ge.setCameraPosition(pos);
+	//}
+	//void drawSingleFrame(unsigned int i_time)
+	//{
+	//	try
+	//	{
+	//		while (ge.windowIsOpen())
+	//		{
+	//			ge.drawScene();
+	//			ge.pollUserInput();
+	//		}
+	//		ge.cleanUp();
+	//	}
+	//	catch (const std::exception& err)
+	//	{
+	//		std::cout << "In Animator::drawSingleFrame():\n";
+	//		throw err;
+	//	}
+	//}
 
 	void setFrameRate(unsigned int fps) {
 		double spf = 1 / (double)fps;
@@ -99,63 +128,115 @@ public:
 		}
 	}
 
-	void play()
+	float getNextFrameInterval() const { return nextFrameInterval; }
+
+	void start(unsigned int startFrameIndex) {
+		i_frame = startFrameIndex;
+		internalClock.start();
+		nextFrameInterval = times[i_frame + 1 ] - times[i_frame];// lastFrameTime;
+	}
+
+
+
+	const Clock& getInternalClock() { return internalClock; }
+
+	void updateScene() 
 	{
-		try
+		++i_frame;
+		for (unsigned int i_entity = 0; i_entity < animateEntities.size(); i_entity++)
 		{
-			double nextTime = times[1]; unsigned int i_time = 1;
-			t = 0;
-			while (ge.windowIsOpen())
-			{
-				timer.start();
-				ge.drawScene();
-				ge.pollUserInput();
-				if ((t+=timer.elapsedS()) >= nextTime)
-				{
-					updateEntityPositions(i_time);
-					timer.reset();
-					if (i_time < nFrames-1)
-					{
-						nextTime = times[++i_time];
-					}
-				}
-			}
-			ge.cleanUp();
+			animateEntities[i_entity]->setPosition(dynamicData[i_frame][i_entity]);
 		}
-		catch (const std::exception& err)
+		if (i_frame + 1 < times.size() - 1)
 		{
-			std::cout << "In Animator::play():\n";
-			throw err;
+			nextFrameInterval = times[i_frame + 1] - times[i_frame];
+			internalClock.start();
 		}
-
+		else
+		{
+			// Program::run() will now always return false and ceises to run this function.
+			nextFrameInterval = std::numeric_limits<float>::infinity();
+		}
 	}
 
-	void hideBox() {
-		ge.hideStaticEntity(0);
+	const Clock& getInternalClock() const { return internalClock; }
+
+
+	//void play()
+	//{
+	//	try
+	//	{
+	//		running = true;
+	//		double nextTime = times[1]; unsigned int i_time = 1;
+	//		t = 0;
+	//		while (ge.windowIsOpen())
+	//		{
+	//			timer.start();
+	//			ge.drawScene();
+	//			ge.pollUserInput();
+	//			if ((t+=timer.elapsedS()) >= nextTime)
+	//			{
+	//				updateEntityPositions(i_time);
+	//				timer.reset();
+	//				if (i_time < nFrames-1)
+	//				{
+	//					nextTime = times[++i_time];
+	//				}
+	//			}
+	//		}
+	//		running = false;
+	//		ge.cleanUp();
+	//	}
+	//	catch (const std::exception& err)
+	//	{
+	//		std::cout << "In Animator::play():\n";
+	//		throw err;
+	//	}
+	//}
+
+	void stop() {
+		/* ... stop running commands*/
+		running = false;
 	}
+
+	//void hideBox() {
+	//	ge.hideStaticEntity(0);
+	//}
+
+	bool isRunning() { return running; }
 
 private:
 
-	void updateEntityPositions(unsigned int data_index) 
+	//void updateEntityPositions(unsigned int data_index) 
+	//{
+	//	ge.shiftEntities(dynamicData[data_index]);
+	//}
+
+	void makeEntities(sptr<Scene> scene)
 	{
-		ge.shiftEntities(dynamicData[data_index]);
+		for (unsigned int i = 0; i < nDynamicParticles; i++)
+		{
+			scene->addEntity(dynamicTypes[i], Color(ColorEnum::BLUE), dynamicData[0][i], dynamicAngles[i], dynamicScales[i], true);
+			animateEntities.push_back(scene->getEntities()[i]);
+			assert(scene->getEntities()[i].use_count() == 2);
+		}
+		for (unsigned int i = 0; i < nStaticParticles; i++)
+		{
+			scene->addEntity(staticTypes[i], Color(ColorEnum::YELLOW, 0.4f), staticData[i], staticAngles[i], staticScales[i], false);
+		}
 	}
 
-
-	void makeEntities() {
+	/*void makeEntities() 
+	{
 		for (unsigned int i = 0; i < nDynamicParticles; i++)
 		{
 			ge.addEntity(dynamicTypes[i], Color(ColorEnum::BLUE) , dynamicData[0][i], dynamicAngles[i], dynamicScales[i], true);
 		}
 		for (unsigned int i = 0; i < nStaticParticles; i++)
 		{
-			ge.addEntity(staticTypes[i], Color(ColorEnum::YELLOW, 1.0), staticData[i], staticAngles[i], staticScales[i], false);
+			ge.addEntity(staticTypes[i], Color(ColorEnum::YELLOW, 0.4f), staticData[i], staticAngles[i], staticScales[i], false);
 		}
-		//for (unsigned int i = 0; i < nStaticParticles; i++)
-		//{
-		//	ge.addEntity(t)
-		//}
-	}
+	}*/
 
 	void loadHeader(std::ifstream& ifile)
 	{
@@ -309,7 +390,6 @@ private:
 	//	}
 	//}
 
-
 	bool readType(std::istringstream& iss, MeshEnum& type) {
 		try
 		{
@@ -381,18 +461,16 @@ private:
 	std::vector<glm::vec3> staticAngles;
 	std::vector<glm::vec3> staticScales;
 
-	std::string path;
+	std::vector<std::shared_ptr<Entity>> animateEntities;
 
-	GraphicsEngine ge;
-
-	//std::vector<Entity*> entities;
-
+	//GraphicsEngine ge;
 	std::vector<double> times;
-
 	double t;
-
-	Clock timer;
-	//Loader loader;
+	Clock internalClock;
+	bool running;
+	unsigned int i_frame;
+	float nextFrameInterval;
+	float lastFrameTime;
 
 };
 

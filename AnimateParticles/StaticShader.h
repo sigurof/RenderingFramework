@@ -1,27 +1,8 @@
 #ifndef STATICSHADER_H
 #define STATICSHADER_H
 #pragma once
-//#include <glad\glad.h>
-//#include <GLFW\glfw3.h>
-//#include "Window.h"
-//#include "Renderer.h"
-//#include "Camera.h"
-//
-//#include "ShaderProgram.h"
-//#include <string>
-//#include "Camera.h"
-//#include "Maths.h"
-//#include "Light.h"
 
-#include "ShaderProgram.h"
-#include <glm-0.9.8.5\glm\glm.hpp>
-#include "Camera.h"
-#include "Maths.h"
-#include "Light.h"
-#include "Surface.h"
-#include "Color.h"
-#include <glad\glad.h>
-#include <GLFW\glfw3.h>
+
 
 
 
@@ -31,13 +12,7 @@ namespace ML {
 	{
 	public:
 
-		StaticShader(const StaticShader& stat) : 
-			location_transformationMatrix(stat.location_transformationMatrix), location_projectionMatrix(stat.location_projectionMatrix), 
-			location_viewMatrix(stat.location_viewMatrix), location_lightPosition(stat.location_lightPosition),
-			location_lightColor(stat.location_lightColor), location_shineDamper(stat.location_shineDamper),
-			location_reflectivity(stat.location_reflectivity),location_color(stat.location_color),
-			location_textureFraction(stat.location_textureFraction), ShaderProgram(VERTEXPATH, FRAGMENTPATH)
-		{
+		StaticShader() : ShaderProgram(VERTEXPATH, FRAGMENTPATH) {
 			linkProgram();
 			getAllUniformLocations();
 		}
@@ -46,10 +21,20 @@ namespace ML {
 			cleanUp();
 		}
 
-		StaticShader() : ShaderProgram(VERTEXPATH, FRAGMENTPATH) {
-			linkProgram();
-			getAllUniformLocations();
-		}
+		StaticShader(const StaticShader&) = delete;
+
+		StaticShader& operator=(const StaticShader&) = delete;
+
+		//StaticShader(const StaticShader& stat) : 
+		//	location_transformationMatrix(stat.location_transformationMatrix), location_projectionMatrix(stat.location_projectionMatrix), 
+		//	location_viewMatrix(stat.location_viewMatrix), location_lightPosition(stat.location_lightPosition),
+		//	location_lightColor(stat.location_lightColor), location_shineDamper(stat.location_shineDamper),
+		//	location_reflectivity(stat.location_reflectivity),location_color(stat.location_color),
+		//	location_textureFraction(stat.location_textureFraction), ShaderProgram(VERTEXPATH, FRAGMENTPATH)
+		//{
+		//	linkProgram();
+		//	getAllUniformLocations();
+		//}
 
 		void loadTransformationMatrix(const glm::mat4& matrix) const
 		{
@@ -64,15 +49,18 @@ namespace ML {
 		//	loadViewMatrix(location_viewMatrix, Maths::createViewMatrix(parent->getCamera()));
 		//}
 
-		void loadViewMatrix(const Camera& camera) const 
+		void loadViewMatrix(const std::shared_ptr<Camera> camera) const 
 		{
 			loadMatrix(location_viewMatrix, Maths::createViewMatrix(camera));
 		}
 
-		void loadLight(const Light& light) const
+		void loadLight(const std::vector<std::shared_ptr<Light>>& lights) const
 		{
-			load3Vector(location_lightPosition, light.getPosition());
-			load3Vector(location_lightColor, light.getColor());
+			for (unsigned int i = 0; i < lights.size(); i++)
+			{
+				load3Vector(location_lightPosition, lights[i]->getPosition());
+				load3Vector(location_lightColor, lights[i]->getColor());
+			}
 		}
 
 		void loadSurfaceVariables(const Surface& surface) const

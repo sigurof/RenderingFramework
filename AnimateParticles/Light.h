@@ -2,7 +2,6 @@
 #define LIGHT_H
 #pragma once
 
-//#include "Renderer.h"
 
 namespace ML {
 	class Light

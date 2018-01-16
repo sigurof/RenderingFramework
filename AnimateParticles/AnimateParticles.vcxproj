@@ -39,8 +39,12 @@
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="enums.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="Program.h" />
+    <ClInclude Include="RigidBodySimulator.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Loader.h" />

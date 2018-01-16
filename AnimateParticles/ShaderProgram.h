@@ -1,16 +1,6 @@
 #ifndef SHADERPROGRAM_H
 #define SHADERPROGRAM_H
 #pragma once
-#include <glad\glad.h>
-#include <GLFW\glfw3.h>
-//#include <glm-0.9.8.5\glm\glm.hpp>
-//#include <string>
-//#include <glm-0.9.8.5\glm/glm.hpp>
-//#include <glm-0.9.8.5\glm/gtc/matrix_transform.hpp>
-#include <glm-0.9.8.5\glm/gtc/type_ptr.hpp>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 
 namespace ML {
 	//enum SHADER_TYPE { VERTEXSHADER = GL_VERTEX_SHADER, FRAGMENTSHADER = GL_FRAGMENT_SHADER };
