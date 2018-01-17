@@ -25,18 +25,11 @@ namespace ML {
 		{
 			try
 			{
-				//if (!meshes[type])
-				//{
-				//	meshes[type] = MeshIdentifier();// OBJLoader::loadObjModel(OBJECTPATH + "sphere.obj", loader);
-				//	instancesOfMesh[type] += 1;
-				//}
 				if (!meshes[type])
 				{
-					//meshes[type] = new MeshIdentifier();
 					meshes[type] = std::shared_ptr<MeshIdentifier>(new MeshIdentifier());
 
 				}
-				//meshes[type] = std::shared_ptr<MeshIdentifier>(new MeshIdentifier());
 				Model model(meshes[type], color, GL_TRIANGLES, 0.5f, 0.5f);
 				if (isDynamicEntity)
 				{
@@ -65,7 +58,6 @@ namespace ML {
 		const std::vector<std::shared_ptr<Entity>>& getEntities() const { return entities;}
 
 		std::map<MeshEnum, std::shared_ptr<MeshIdentifier>>& getMeshes() { return meshes; }
-		//std::map<MeshEnum, MeshIdentifier*>& getMeshes() { return meshes; }
 
 		std::shared_ptr<Camera> getCurrentCamera() {
 			return cameras[currentCameraIndex];
@@ -77,9 +69,7 @@ namespace ML {
 		std::vector<std::shared_ptr<Entity>> entities;
 		unsigned int currentCameraIndex;
 
-		//std::map <MeshEnum, unsigned int> instancesOfMesh;
 		std::map<MeshEnum, std::shared_ptr<MeshIdentifier>> meshes;
-		//std::map<MeshEnum, MeshIdentifier*> meshes;
 
 
 	};

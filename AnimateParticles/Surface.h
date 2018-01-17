@@ -59,13 +59,11 @@ namespace ML {
 
 		bool isColorActive() const { return colorIsActive; }
 		bool isTextureActive() const { return textureIsActive; }
-		//SurfaceType getSurfaceType() const { return surfaceType; }
 		const Color* getColor() const { return color; }
 		const ModelTexture* getTexture() const { return texture; }
 
 		void setColorActive(bool active) { colorIsActive = active; }
 		void setTextureActive(bool active) { textureIsActive = active; }
-		//void setSurfaceType(SurfaceType surfType) { surfaceType = surfType; }
 		void setColor(const Color& col) { color = new Color(col); }
 		void setTexture(const ModelTexture& tex) { texture = new ModelTexture(tex); }
 
@@ -78,7 +76,6 @@ namespace ML {
 
 
 	private:
-		//SurfaceType surfaceType;
 		bool colorIsActive;
 		bool textureIsActive;
 		Color* color;

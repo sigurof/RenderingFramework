@@ -22,9 +22,6 @@ namespace ML {
 		{
 			glm::mat4 viewMatrix = glm::lookAt(camera->getPosition(), camera->getTarget(), camera->getUpDirection());
 			return viewMatrix;
-			
-			//glm::mat4 viewMatrix = glm::lookAt(Camera::currentlyActiveCamera->getPosition(), Camera::currentlyActiveCamera->getTarget(), Camera::currentlyActiveCamera->getUpDirection());
-			return viewMatrix;
 		}
 
 

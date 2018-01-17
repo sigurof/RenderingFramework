@@ -25,17 +25,6 @@ namespace ML {
 
 		StaticShader& operator=(const StaticShader&) = delete;
 
-		//StaticShader(const StaticShader& stat) : 
-		//	location_transformationMatrix(stat.location_transformationMatrix), location_projectionMatrix(stat.location_projectionMatrix), 
-		//	location_viewMatrix(stat.location_viewMatrix), location_lightPosition(stat.location_lightPosition),
-		//	location_lightColor(stat.location_lightColor), location_shineDamper(stat.location_shineDamper),
-		//	location_reflectivity(stat.location_reflectivity),location_color(stat.location_color),
-		//	location_textureFraction(stat.location_textureFraction), ShaderProgram(VERTEXPATH, FRAGMENTPATH)
-		//{
-		//	linkProgram();
-		//	getAllUniformLocations();
-		//}
-
 		void loadTransformationMatrix(const glm::mat4& matrix) const
 		{
 			loadMatrix(location_transformationMatrix, matrix);
@@ -44,10 +33,6 @@ namespace ML {
 		void loadProjectionMatrix(glm::mat4 projection) {
 			loadMatrix(location_projectionMatrix, projection);
 		}
-
-		//void loadViewMatrix(const Window* parent) const {
-		//	loadViewMatrix(location_viewMatrix, Maths::createViewMatrix(parent->getCamera()));
-		//}
 
 		void loadViewMatrix(const std::shared_ptr<Camera> camera) const 
 		{
@@ -105,9 +90,9 @@ namespace ML {
 			char infoLog[512];
 			std::string errMsg = "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n";
 
-			bindAttributes();// TODO: This function is not implemented!
+			bindAttributes();
 			glLinkProgram(ID);
-			//glValidateProgram(ID);
+			glValidateProgram(ID);
 			/* CHECK FOR LINKING ERRORS: */
 			glGetProgramiv(ID, GL_LINK_STATUS, &success);
 			if (!success)

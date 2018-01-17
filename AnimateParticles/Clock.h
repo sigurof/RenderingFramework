@@ -11,11 +11,6 @@ namespace ML {
 	public:
 		Clock() : begin(std::chrono::system_clock::now()), end(std::chrono::system_clock::now()) {}
 
-		//void reset() {
-		//	begin = std::chrono::system_clock::now();
-		//	end = std::chrono::system_clock::now();
-		//}
-
 		void start() {
 			begin = std::chrono::system_clock::now();
 		}

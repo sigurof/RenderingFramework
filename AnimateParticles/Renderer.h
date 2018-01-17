@@ -5,7 +5,6 @@
 
 
 namespace ML {
-	//class Window;
 	class Renderer
 	{
 	public:
@@ -59,21 +58,6 @@ namespace ML {
 				throw err;
 			}		
 		}
-
-		//void makeShader() 
-		//{
-		//	shader = new StaticShader();
-		//	shader->start();
-		//	shader->loadProjectionMatrix(projectionMatrix);
-		//	shader->stop();
-		//}
-
-		//void setCameraPosition(const glm::vec3& pos)
-		//{
-		//	camera->setPosition(pos);
-		//}
-
-		
 		
 		void cleanUp() const
 		{
@@ -87,7 +71,7 @@ namespace ML {
 			glClearColor(r, g, b, alpha);
 		}
 
-		void renderEntities() const //const std::map<Model, std::vector<Entity*>>& entities) const
+		void renderEntities() const
 		{
 			/* For each Model */
 			for (std::vector<std::shared_ptr<Entity>>::const_iterator it = scene->getEntities().begin(); it != scene->getEntities().end(); it++)//std::map<Model,std::vector<Entity*>>::const_iterator it = entities.begin(); it!=entities.end(); it++)
@@ -100,16 +84,6 @@ namespace ML {
 					unbindModel();
 				}
 			}
-			//for (std::vector<Entity*>::const_iterator it = staticEntities.begin(); it != staticEntities.end(); it++)//std::map<Model,std::vector<Entity*>>::const_iterator it = entities.begin(); it!=entities.end(); it++)
-			//{
-			//	if ((*it)->getDraw())
-			//	{
-			//		prepareModel((*it)->getModel());
-			//		prepareInstance(*(it));
-			//		glDrawElements((*it)->getModel().getDrawMode(), (*it)->getModel().getRawModel()->getVertexCount(), GL_UNSIGNED_INT, (void*)0);
-			//		unbindModel();
-			//	}
-			//}
 		}
 
 		void prepareModel(const Model& model) const 
@@ -153,7 +127,7 @@ namespace ML {
 			shader->loadTransformationMatrix(transformationMatrix);
 		}
 
-		void render() const //(std::shared_ptr<Scene> scene) const //std::map<Model, std::vector<Entity*>>& entities) const
+		void render() const 
 		{
 			/* Renders all the entities in the scene */
 			prepare(0.2f, 0.2f, 0.2f, 1.0f);
@@ -162,10 +136,7 @@ namespace ML {
 			shader->loadViewMatrix(scene->getCurrentCamera());
 			renderEntities();
 			shader->stop();
-			//entities.clear();
 		}
-
-		//void moveCamera(const DirectionEnum dir) { camera->move(dir); }
 	
 		void changeFOV(float fov) { FOV = fov; recalculateProjectionMatrix(); }
 		void changeNEAR_PLANE(float near_plane) { NEAR_PLANE = near_plane; recalculateProjectionMatrix(); }
@@ -173,8 +144,6 @@ namespace ML {
 		void changeProjectionMatrix(float fov, float near_plane, float far_plane) { FOV = fov; NEAR_PLANE = near_plane; FAR_PLANE = far_plane; recalculateProjectionMatrix(); }
 		void setProjectionMatrix(const glm::mat4& projMat) { projectionMatrix = projMat; }
 		void setAspectRatio(float aspRat) { aspectRatio = aspRat; }
-		//void setCamera(const std::shared_ptr<Camera> cam) { camera = cam; }
-		//void setDt(float dt) { camera->setDt(dt); }
 		void setShader(const std::shared_ptr<StaticShader> shadr) { this->shader = shadr; }
 		void setScene(const std::shared_ptr<Scene> scn)
 		{
@@ -188,7 +157,6 @@ namespace ML {
 		float getFAR_PLANE() const { return FAR_PLANE; }
 		const glm::mat4& getProjectionMatrix() const { return projectionMatrix; }
 		float getAspectRatio() const { return aspectRatio; }
-		//std::shared_ptr<Camera> getCamera() const { return camera; }
 		std::shared_ptr<Scene> getScene() const { return scene; }
 
 
@@ -202,7 +170,6 @@ namespace ML {
 
 
 		void prepareShader() {
-			//shader = std::shared_ptr<StaticShader>(new StaticShader);
 			shader->start();
 			shader->loadProjectionMatrix(projectionMatrix);
 			shader->stop();
@@ -216,12 +183,10 @@ namespace ML {
 		float FAR_PLANE;
 		float aspectRatio;
 		std::shared_ptr<StaticShader> shader;
-		//std::shared_ptr<Camera> camera;
 		std::shared_ptr<Scene> scene;
 
 		void recalculateProjectionMatrix()
 		{
-			//aspectRatio = parentWindow->getAspectRatio();
 			float x_scale = (1.0f / glm::tan(glm::radians(FOV / 2.0f)));
 			float y_scale = x_scale*aspectRatio;
 			float frustum_length = FAR_PLANE - NEAR_PLANE;
@@ -232,8 +197,6 @@ namespace ML {
 			projectionMatrix[2][3] = -1;
 			projectionMatrix[3][2] = -((2 * NEAR_PLANE*FAR_PLANE) / frustum_length);
 			projectionMatrix[3][3] = 0;
-
-			//return matrix;
 
 		}
 	};

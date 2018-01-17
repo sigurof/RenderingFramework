@@ -9,7 +9,6 @@ namespace ML {
 	{
 	public:
 		ModelTexture(){}
-		//ModelTexture(int ID) : textureID(ID), shineDamper(1), reflectivity(0) {}
 
 		ModelTexture(int ID) : textureID(ID){}
 

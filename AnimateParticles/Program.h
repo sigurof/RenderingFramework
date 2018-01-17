@@ -2,33 +2,13 @@
 #define PROGRAM_H
 #pragma once
 
-//void mouse_move_callback_helper(GLFWwindow* window, double xpos, double ypos) {
-//	float dx = xpos - lastMouseXpos;
-//	float dy = ypos - lastMouseYpos;
-//	lastMouseXpos = xpos;
-//	lastMouseYpos = ypos;
-//	if (Window::context
-//		&& Window::context->mouse_is_captured) {
-//		for (auto fun : Window::context->mouse_move_events) {
-//			fun(dx, dy);
-//		}
-//	}
-//}
-
 float yaw(90.0f); float pitch(0.0f); bool firstMouseMovement = false;
-
-//glm::vec3 cameraFwDir = glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)), sin(glm::radians(pitch)), sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
-//glm::vec3 targ;
-//glm::vec3 pos;
-//glm::vec3 rt;
-//glm::vec3 up = glm::vec3(0, 1, 0);
 
 template <class T>
 using sptr = std::shared_ptr<T>;
 
 void cursor_move_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	//std::cout << "x = " << xpos << "\ty = " << ypos << "\n";
 	float dx = (float)xpos - Window::currentlyActiveWindow->getLastMouseXpos();
 	float dy = (float)ypos - Window::currentlyActiveWindow->getLastMouseYpos();
 	Window::currentlyActiveWindow->setLastMouseXpos((float)xpos);
@@ -42,46 +22,12 @@ void cursor_move_callback(GLFWwindow* window, double xpos, double ypos)
 			pitch = 89.0f;
 		if (pitch < -89.0f)
 			pitch = -89.0f;
-		//std::cout << "yaw = " << yaw << "\tpitch = " << pitch << "\n";
-		Camera::currentlyActiveCamera->changeViewDirection(yaw, pitch);// cameraFwDir.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-		//Camera::currentlyActiveCamera->set cameraFwDir.y = sin(glm::radians(pitch));
-		//Camera::currentlyActiveCamera->set cameraFwDir.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		//Camera::currentlyActiveCamera->set cameraFwDir = glm::normalize(cameraFwDir);
-		//Camera::currentlyActiveCamera->set targ = pos + cameraFwDir;
-		//Camera::currentlyActiveCamera->set rt = glm::cross(cameraFwDir, up);
+		Camera::currentlyActiveCamera->changeViewDirection(yaw, pitch);
 	}
-
-
-
-	//if (firstMouseMovement) // this bool variable is initially set to true
-	//{
-	//	lastX = (float)xpos;
-	//	lastY = (float)ypos;
-	//	firstMouseMovement = false;
-	//}
-	//float xoffset = (float)(xpos - lastX);
-	//float yoffset = (float)(lastY - ypos); //reversed because y-coordinates range from bottom to top
-	//lastX = (float)xpos;
-	//lastY = (float)ypos;
-	//float sensitivity = 0.05f;
-	//xoffset *= sensitivity;
-	//yoffset *= sensitivity;
-	//yaw += xoffset; pitch += yoffset;
-	//if (pitch > 89.0f)
-	//	pitch = 89.0f;
-	//if (pitch < -89.0f)
-	//	pitch = -89.0f;
-	//cameraFwDir.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	//cameraFwDir.y = sin(glm::radians(pitch));
-	//cameraFwDir.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	//cameraFwDir = glm::normalize(cameraFwDir);
-	//targ = pos + cameraFwDir;
-	//rt = glm::cross(cameraFwDir, up);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	//Window::currentlyActiveWindow->setLastMouseButton(button, action);
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 		std::cout << "Left press\n";
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
@@ -166,21 +112,6 @@ public:
 
 	void loadUpScene() 
 	{	
-		//for (std::map<MeshEnum, MeshIdentifier*>::iterator it = scene->getMeshes().begin(); it != scene->getMeshes().end(); it++)
-		//{
-		//	switch (it->first)
-		//	{
-		//	case Ball:
-		//		*(it->second) = MeshIdentifier(OBJLoader::loadObjModel(OBJECTPATH + "sphere.obj", loader));
-		//		break;
-		//	case Cube:
-		//		*(it->second) = MeshIdentifier(OBJLoader::loadObjModel(OBJECTPATH + "cube.obj", loader));
-		//		break;
-		//	default:
-		//		break;
-		//	}
-		//}
-
 		for (std::map<MeshEnum, std::shared_ptr<MeshIdentifier>>::iterator it = scene->getMeshes().begin();
 			it != scene->getMeshes().end(); it++)
 		{
@@ -207,10 +138,6 @@ public:
 
 	void processUserInput() 
 	{
-
-		//if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		//	close();
-		/* 3D camera */
 		if (Window::currentlyActiveWindow->isMouseCaptured())
 		{
 			if (glfwGetKey(window->getGlfwWindow(), GLFW_KEY_W) == GLFW_PRESS) { Camera::currentlyActiveCamera->move(DirectionEnum::Forwards); }
@@ -298,20 +225,6 @@ private:
 		}
 	}
 
-	//void updateSceneUsingAnimator(float t) 
-	//{
-	//	
-	//	playback.updateScene();
-	//	if (t >= nextTime)
-	//	{
-	//		updateEntityPositions(i_time);
-	//		timer.reset();
-	//		if (i_time < nFrames-1)
-	//		{
-	//			nextTime = times[++i_time];
-	//		}
-	//	}
-	//}
 	void updateSceneUsingSimulator() {}
 
 	void openWindow(const std::string& name, unsigned int width, unsigned int height)
@@ -330,14 +243,11 @@ private:
 
 	void setWindowCallbackFunctions() 
 	{
-
 		glfwSetFramebufferSizeCallback(window->getGlfwWindow(), framebuffer_size_callback);
 		glfwSetCursorPosCallback(window->getGlfwWindow(), cursor_move_callback);
 		glfwSetMouseButtonCallback(window->getGlfwWindow(), mouse_button_callback);
 		glfwSetWindowCloseCallback(window->getGlfwWindow(), window_close_callback);
 		glfwSetKeyCallback(window->getGlfwWindow(), key_callback);
-
-
 	}
 
 	

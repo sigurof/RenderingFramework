@@ -56,9 +56,8 @@ namespace ML
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 		
-		void swapBuffers() {
-
-			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		void swapBuffers() 
+		{
 			glfwSwapBuffers(window);
 		}
 
@@ -80,14 +79,11 @@ namespace ML
 					}
 					isopen = true;
 					setThisToCurrentlyActive();
-					/*Callbacks*/
 					if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 					{
 						throw std::exception("Failed to initialize GLAD");
 					}
 					enableAlpha();
-					//renderer = new Renderer(this->getAspectRatio());
-					//renderer->makeShader();
 				}
 				else
 				{
@@ -105,15 +101,6 @@ namespace ML
 			isopen = false;
 			glfwSetWindowShouldClose(window, true);
 		}
-
-		void setCameraPosition(const glm::vec3& pos)
-		{
-			//renderer->setCameraPosition(pos);
-		}
-
-		void moveCamera(const DirectionEnum dir) { 
-			/*renderer->moveCamera(dir);*/
-		 }
 
 		void enableAlpha() {
 			glEnable(GL_BLEND);
@@ -193,7 +180,6 @@ namespace ML
 
 		GLFWwindow* getGlfwWindow() const { return window; }
 		const std::string& getTitle() const { return title; }
-		//const Renderer* getRenderer() const { return renderer; }
 		bool isMouseCaptured() const { return mouseIsCaptured; }
 		float getLastMouseXpos() const { return lastMouseXpos; }
 		float getLastMouseYpos() const { return lastMouseYpos; }
@@ -202,11 +188,10 @@ namespace ML
 		void setWidth(int width) { glfwSetWindowSize(window, width, getHeight()); }
 		void setHeight(int height) { glfwSetWindowSize(window, getWidth(), height); }
 		void setWindow(GLFWwindow* win) { window = win; }
-		//void setRenderer(const Renderer& ren) {  }
 		void setTitle(const std::string& tit) { title = tit; }
-		void setDt(float dt) { 
-			//renderer->setDt(dt); 
-		}
+		//void setDt(float dt) { 
+		//	//renderer->setDt(dt); 
+		//}
 		void setLastMouseXpos(const float x) { lastMouseXpos = x; }
 		void setLastMouseYpos(const float y) { lastMouseYpos = y; }
 		void setMouseSensitivity(const float val) { mouseSensitivity = val; }
@@ -223,9 +208,6 @@ namespace ML
 
 	private:
 		GLFWwindow* window;
-		/*!!!!!!!!!!!Renderer should not be a member of Window!!!!!!*/
-		//Renderer* renderer;
-		//Camera camera;
 		std::string title;
 		bool isopen;
 
@@ -240,49 +222,9 @@ namespace ML
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);//Sets opengl v3
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);//Sets opengl vX.3
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//A smaller set of functions
-			 //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE); //needed for mac
+			//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE); //needed for mac
 		}
 	};
 }
 
-
-
-//void Window::mouse_capture() {
-//	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-//	this->mouse_is_captured = true;
-//}
-//
-//void Window::mouse_release() {
-//	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-//	this->mouse_is_captured = false;
-//}
-//float last_mouse_xpos = 400;
-//float last_mouse_ypos = 300;
-//
-//void mouse_move_callback_helper(GLFWwindow* window, double xpos, double ypos) {
-//	float dx = xpos - last_mouse_xpos;
-//	float dy = ypos - last_mouse_ypos;
-//	last_mouse_xpos = xpos;
-//	last_mouse_ypos = ypos;
-//	if (Window::context
-//		&& Window::context->mouse_is_captured) {
-//		for (auto fun : Window::context->mouse_move_events) {
-//			fun(dx, dy);
-//		}
-//	}
-//}
-//glfwSetCursorPosCallback(window, mouse_move_callback_helper);
-//app.register_mouse_move_callback([&](double dx, double dy) {
-//	const float angle = 5.0f * Window::context->frame_time;
-//	float c = cos(angle / 2);
-//	float s = sin(angle / 2);
-//
-//	glm::quat r = glm::quat(c, dy * s, dx * s, 0) * Window::context->get_scene()->camera.rotation;
-//
-//	Window::context->get_scene()->camera.rotation = glm::normalize(r);
-//
-//
-//});
-//void register_key_event(int key, int key_action, std::function<void()> fun);
-//void register_mouse_move_callback(std::function<void(double, double)> fun);
 #endif // !WINDOW_H

@@ -3,15 +3,13 @@
 #pragma once
 
 namespace ML {
-	//enum SHADER_TYPE { VERTEXSHADER = GL_VERTEX_SHADER, FRAGMENTSHADER = GL_FRAGMENT_SHADER };
-
 
 	class ShaderProgram
 	{
 	public:
 		ShaderProgram(){}
 
-		ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)//, std::function<void(void)> bindAttributes)
+		ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)
 		{
 			std::string vertexCode;
 			std::string fragmentCode;
