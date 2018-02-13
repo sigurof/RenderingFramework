@@ -16,7 +16,7 @@ namespace ML {
 		Surface(const Surface& s) :
 			colorIsActive(s.isColorActive()), textureIsActive(s.isTextureActive()), 
 			color(nullptr), texture(nullptr),
-			textureFraction(s.getTextureFraction()), shineDamper(s.getShineDamper()), reflectivity(s.getReflectivity())
+			textureFraction(s.getTextureFraction())/*, shineDamper(s.getShineDamper()), reflectivity(s.getReflectivity())*/
 		{
 			if (s.color != nullptr)
 			{
@@ -33,22 +33,22 @@ namespace ML {
 		Surface(const Color& col) : Surface(col, 1 / 2, 1 / 2) {}
 
 		Surface(const ModelTexture& tex, float damper, float refl) :
-			color(nullptr), texture(new ModelTexture(tex)),
-			shineDamper(damper), reflectivity(refl), textureFraction(1),
+			color(nullptr), texture(new ModelTexture(tex)),/*
+			shineDamper(damper), reflectivity(refl), */textureFraction(1),
 			colorIsActive(false), textureIsActive(true)
 		{}
 
 		Surface(const Color& col, float damper, float refl) :
-			texture(nullptr), color(new Color(col)),
-			shineDamper(damper), reflectivity(refl), textureFraction(0),
+			texture(nullptr), color(new Color(col)),/*
+			shineDamper(damper), reflectivity(refl),*/ textureFraction(0),
 			colorIsActive(true), textureIsActive(false)
 		{}
 
 		Surface(const Color& col, const ModelTexture& tex) : Surface(col, tex, 1 / 2, 1 / 2, 1 / 2) {}
 
 		Surface(const Color& col, const ModelTexture& tex, float damper, float refl, float texFrac) :
-			color(new Color(col)), texture(new ModelTexture(tex)),
-			shineDamper(damper), reflectivity(refl), textureFraction(texFrac),
+			color(new Color(col)), texture(new ModelTexture(tex)),/*
+			shineDamper(damper), reflectivity(refl),*/ textureFraction(texFrac),
 			colorIsActive(true), textureIsActive(true)
 		{}
 
@@ -67,11 +67,11 @@ namespace ML {
 		void setColor(const Color& col) { color = new Color(col); }
 		void setTexture(const ModelTexture& tex) { texture = new ModelTexture(tex); }
 
-		float getReflectivity() const { return reflectivity; }
-		float getShineDamper() const { return shineDamper; }
+		//float getReflectivity() const { return reflectivity; }
+		//float getShineDamper() const { return shineDamper; }
 		float getTextureFraction() const { return textureFraction; }
-		void setReflectivity(const float refl) { reflectivity = refl; }
-		void setShineDamper(const float shDa) { shineDamper = shDa; }
+		//void setReflectivity(const float refl) { reflectivity = refl; }
+		//void setShineDamper(const float shDa) { shineDamper = shDa; }
 		void setTextureFraction(const float texFrac) { textureFraction = texFrac; }
 
 
@@ -81,8 +81,8 @@ namespace ML {
 		Color* color;
 		ModelTexture* texture;
 		float textureFraction;
-		float shineDamper;
-		float reflectivity;
+		//float shineDamper;
+		//float reflectivity;
 	};
 
 }

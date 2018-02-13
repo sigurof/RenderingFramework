@@ -49,34 +49,39 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	}
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	/* Program */
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-		Window::currentlyActiveWindow->close();
-	
-	/* Window */
-	else if (key == GLFW_KEY_1 && action == GLFW_RELEASE)
-		Window::currentlyActiveWindow->captureMouse();
-	else if (key == GLFW_KEY_2 && action == GLFW_RELEASE)
-		Window::currentlyActiveWindow->releaseMouse();
-	
-
-}
+//void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+//{
+//	/* Program */
+//	if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
+//		Window::currentlyActiveWindow->close();
+//	if (key == GLFW_KEY_R && action == GLFW_RELEASE)
+//		
+//
+//	/* Window */
+//	else if (key == GLFW_KEY_1 && action == GLFW_RELEASE)
+//		Window::currentlyActiveWindow->captureMouse();
+//	else if (key == GLFW_KEY_2 && action == GLFW_RELEASE)
+//		Window::currentlyActiveWindow->releaseMouse();
+//
+//}
 
 class Program
 {
 public:
 
-	Program() {}
+	Program() : Program("OpenGL") {}
 
-	Program(const std::string& title, unsigned int width, unsigned int height) 
+	Program(const std::string& title)
 	{
-		openViewPort(title, width, height);
+		//scene = std::shared_ptr<Scene>(new Scene);
+		Program::currentlyActiveProgram = this;
+		//openViewPort(title, width, height);
 	}
 
 	~Program() {
+#ifdef VERBOSEDESTRUCTORS
 		std::cout << "Program::Destructor\n";
+#endif // VERBOSEDESTRUCTORS
 		if (currentlyActiveProgram == this)
 		{
 			currentlyActiveProgram = nullptr;
@@ -99,38 +104,84 @@ public:
 	{
 		openWindow(title, width, height);
 		window->captureMouse();
+#ifndef NOUPLOADING
 		loadUpScene();
 		prepareRenderer();
+#endif // NOUPLOADING
 	}
 	
+	void setKeyCallback(void(*f)(GLFWwindow*, int, int, int, int)) 
+	{
+		glfwSetKeyCallback(window->getGlfwWindow(), f);
+	}
+
+	void setFrameRate(int fps) {
+		playback->setFrameRate(fps);
+	}
+
 	void makeSceneFromPlaybackData(const std::string& path) 
 	{
 		playback = sptr<Animator>(new Animator(path));
 		playback->setFrameRate(25);
-		this->scene = playback->initializeScene();
-	}
+#ifndef NOUPLOADING
+		this->scene = playback->makeScene(loader);
+#else
+		this->scene = playback->makeScene(loader);
 
-	void loadUpScene() 
-	{	
-		for (std::map<MeshEnum, std::shared_ptr<MeshIdentifier>>::iterator it = scene->getMeshes().begin();
+#endif
+	}
+#ifdef NOUPLOADING
+#else
+	void loadUpScene()
+	{
+		for (std::map<MeshEnum, std::shared_ptr<VAOHandle>>::iterator it = scene->getMeshes().begin();
 			it != scene->getMeshes().end(); it++)
 		{
 			switch (it->first)
 			{
-			case Ball:
-				*(it->second) = MeshIdentifier(OBJLoader::loadObjModel(OBJECTPATH + "sphere.obj", loader));
+			case Sphere:
+				*(it->second) = VAOHandle(loader.loadOBJFile(OBJECTPATH + "sphere.obj"));
 				break;
 			case Cube:
-				*(it->second) = MeshIdentifier(OBJLoader::loadObjModel(OBJECTPATH + "cube.obj", loader));
+				*(it->second) = VAOHandle(loader.loadOBJFile(OBJECTPATH + "cube.obj"));
 				break;
+
 			default:
 				break;
 			}
-			
 		}
 	}
 
-	void shouldPlay(){}
+#endif // NOUPLOADING
+
+	
+#ifdef NOUPLOADING
+	void addParticleTraceToScene(unsigned int index) 
+	{
+		playback->addParticleTraceToScene(scene, index);
+	}
+#endif // NOUPLOADING
+
+	void toggleAlpha(bool on) {
+		if (on)
+		{
+			window->enableAlpha();
+		}
+		else
+		{
+			window->disableAlpha();
+		}
+	}
+
+	void setMouseSensitivity(float sensitivity)
+	{
+		window->setMouseSensitivity(sensitivity);
+	}
+
+	void shouldPlay(bool play)
+	{
+		playback->setRunning(play);
+	}
 
 	void pollUserInput() {
 		glfwPollEvents();
@@ -150,9 +201,16 @@ public:
 
 	}
 
+	void setSpeed(float speed) {
+		Camera::currentlyActiveCamera->setSpeed(speed);
+	}
+
 	void run() {
 		try
 		{
+#ifdef NOUPLOADING
+			prepareRenderer();
+#endif // NOUPLOADING
 			if (playback.operator bool()) { playback->start(0); }
 			while (window->isOpen())
 			{
@@ -176,6 +234,13 @@ public:
 		}
 	}
 
+	void restartPlayback() {
+		if (playback.operator bool())
+		{
+			playback->restart();
+		}
+	}
+
 	void terminate() {
 		window->close();
 		if (playback.operator bool())
@@ -189,6 +254,8 @@ public:
 	}
 
 	static Program* currentlyActiveProgram;
+
+	const std::shared_ptr<Animator> getPlayback() { return playback; }
 
 private:
 	std::shared_ptr<Window> window;
@@ -206,9 +273,12 @@ private:
 	void updateScene() {
 		if (playback.operator bool())
 		{
-			if (playback->getInternalClock().elapsedS() > playback->getNextFrameInterval())
+			if (playback->isRunning())
 			{
-				playback->updateScene();
+				if (playback->getInternalClock().elapsedS() > playback->getNextFrameInterval())
+				{
+					playback->updateScene();
+				}
 			}
 		}
 		else if (physicsEngine.operator bool())
@@ -237,8 +307,15 @@ private:
 	{
 		renderer = std::shared_ptr<Renderer>(new Renderer);
 		renderer->setScene(scene);
-		renderer->setShader(std::shared_ptr<StaticShader>(new StaticShader));
-		renderer->prepareShader();
+		renderer->setSurfaceShader(std::shared_ptr<Shader>(new Shader(SHADERPATH + "shader.vs", SHADERPATH + "shader.fs")));
+		renderer->setLightShader(std::shared_ptr<Shader>(new Shader(SHADERPATH + "light.vs", SHADERPATH + "light.fs")));
+		renderer->prepareSurfaceShader();
+#ifdef NOUPLOADING
+		renderer->setLineShader(std::shared_ptr<Shader>(new Shader(SHADERPATH + "line.vs", SHADERPATH + "line.fs")));
+		renderer->prepareLineShader();
+#endif // NOUPLOADING
+
+		renderer->prepareLightShader();
 	}
 
 	void setWindowCallbackFunctions() 
@@ -247,13 +324,7 @@ private:
 		glfwSetCursorPosCallback(window->getGlfwWindow(), cursor_move_callback);
 		glfwSetMouseButtonCallback(window->getGlfwWindow(), mouse_button_callback);
 		glfwSetWindowCloseCallback(window->getGlfwWindow(), window_close_callback);
-		glfwSetKeyCallback(window->getGlfwWindow(), key_callback);
-	}
-
-	
-
-	void cleanUp(){
-			
+		//glfwSetKeyCallback(window->getGlfwWindow(), key_callback);
 	}
 
 	void loadPlaybackData(const std::string& path) {}

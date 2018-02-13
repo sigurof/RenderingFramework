@@ -11,7 +11,9 @@ class Animator
 {
 public:
 
-	Animator(const std::string& path) {
+	Animator(const std::string& path) : running(false)
+	{
+		nextOutputFrame = 0;
 		try
 		{
 			load(path);
@@ -27,22 +29,98 @@ public:
 
 	Animator& operator=(const Animator&) = delete;
 
-	sptr<Scene> initializeScene() {
-		sptr<Scene> scene = sptr<Scene>(new Scene);
-		for (unsigned int i = 0; i < nDynamicParticles; i++)
+	sptr<Scene> makeScene(Loader& loader)
+	{
+		try
 		{
-			scene->addEntity(dynamicTypes[i], Color(ColorEnum::BLUE), dynamicData[0][i], dynamicAngles[i], dynamicScales[i], true);
-			animateEntities.push_back(scene->getEntities()[i]);
-			assert(scene->getEntities()[i].use_count() == 2);
+			sptr<Scene> scene = sptr<Scene>(new Scene);
+			for (unsigned int i = 0; i < nDynamicParticles; i++)
+			{
+#ifdef NOUPLOADING
+				MeshInfo info;
+				switch (dynamicTypes[i])
+				{
+				case Sphere:
+					info.setDiscLocation(OBJECTPATH + "sphere.obj");
+					info.setStorage(StorageEnum::Disc);
+					break;
+				case Cube:
+					info.setDiscLocation(OBJECTPATH + "cube.obj");
+					info.setStorage(StorageEnum::Disc);
+				default:
+					throw(std::exception("ERROR! Could not recognize dynamic type\n"));
+					break;
+				}
+				scene->addSurface(info, Color(ColorEnum::ORANGE), dynamicData[0][i], dynamicAngles[i], dynamicScales[i], true);
+#else
+				scene->addSurface(dynamicTypes[i], Color(ColorEnum::ORANGE), dynamicData[0][i], dynamicAngles[i], dynamicScales[i], true);
+#endif // NOUPLOADING
+				animateEntities.push_back(scene->getSurfaces()[i]);
+				assert(scene->getSurfaces()[i].use_count() == 2);
+			}
+			for (unsigned int i = 0; i < nStaticParticles; i++)
+			{
+#ifdef NOUPLOADING
+				MeshInfo info;
+				switch (staticTypes[i])
+				{
+				case Sphere:
+					info.setDiscLocation(OBJECTPATH + "sphere.obj");
+					info.setStorage(StorageEnum::Disc);
+					break;
+				case Cube:
+					info.setDiscLocation(OBJECTPATH + "cube.obj");
+					info.setStorage(StorageEnum::Disc);
+					break;
+				default:
+					throw(std::exception("ERROR! Could not recognize object static type\n"));
+					break;
+				}
+				scene->addSurface(info, Color(ColorEnum::GREEN, 0.4f), staticData[i], staticAngles[i], staticScales[i], true);
+#else
+				scene->addSurface(staticTypes[i], Color(ColorEnum::GREEN, 0.4f), staticData[i], staticAngles[i], staticScales[i], false);
+#endif // NOUPLOADING
+			}
+			return scene;
 		}
-		for (unsigned int i = 0; i < nStaticParticles; i++)
+		catch (const std::exception& err)
 		{
-			scene->addEntity(staticTypes[i], Color(ColorEnum::YELLOW, 0.4f), staticData[i], staticAngles[i], staticScales[i], false);
+			std::cout << "In Animator::makeScene\n";
+			throw err;
 		}
-		return scene;
 	}
 
-	void load(const std::string& path) 
+	//void addParticleTraceToScene(sptr<Scene> scene, unsigned int particleIndex, const Color& col)
+	//{
+	//	VAOHandle mesh()
+	//	scene->addEntity(Line, col, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), false);
+	//}
+
+#ifdef NOUPLOADING
+	void addParticleTraceToScene(std::shared_ptr<Scene> scene, unsigned int particleIndex)
+	{
+		std::shared_ptr<VertexData> data(new VertexData);
+		std::vector<float> vertices = std::vector<float>(3 * dynamicData.size(), 0.0f);
+		std::vector<unsigned int> indices = std::vector<unsigned int>(2 * dynamicData.size(), 0);
+		for (size_t i = 0; i < dynamicData.size(); i++)
+		{
+			vertices[3 * i + 0] = dynamicData[i][particleIndex].x;
+			vertices[3 * i + 1] = dynamicData[i][particleIndex].y;
+			vertices[3 * i + 2] = dynamicData[i][particleIndex].z;
+			indices[2 * i + 0] = i;
+			indices[2 * i + 1] = i + 1;
+			//indices[2 * i + 2] = i + 2;
+		}
+		indices[indices.size() - 1] = indices[0];
+		data->setVertices(vertices);
+		data->setIndices(indices);
+		MeshInfo qualifier(data, std::string("particleTrace" + std::to_string(particleIndex)));
+		scene->addLine(qualifier, Color(ColorEnum::WHITE), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), false);
+	}
+#endif // NOUPLOADING
+
+
+	void load(const std::string& path)
 	{
 		try
 		{
@@ -80,30 +158,46 @@ public:
 		}
 	}
 
+	void restart()
+	{
+		start(1);
+		for (unsigned int i_entity = 0; i_entity < animateEntities.size(); i_entity++)
+		{
+			animateEntities[i_entity]->setPosition(dynamicData[0][i_entity]);
+		}
+	}
+
 	float getNextFrameInterval() const { return nextFrameInterval; }
 
 	void start(unsigned int startFrameIndex) {
+		nextOutputFrame = startFrameIndex;
 		i_frame = startFrameIndex;
 		internalClock.start();
-		nextFrameInterval = times[i_frame + 1 ] - times[i_frame];// lastFrameTime;
+		nextFrameInterval = (float)(times[i_frame + 1] - times[i_frame]);// lastFrameTime;
 	}
 
 	const Clock& getInternalClock() { return internalClock; }
 
-	void updateScene() 
+	void updateScene()
 	{
 		++i_frame;
+		//if (i_frame == nextOutputFrame)
+		//{
+		//	std::cout << "\r"; std::cout << i_frame / (int)nFrames*100 << "%";
+		//	nextOutputFrame = (unsigned int)((double)nFrames / 10 + i_frame);
+		//}
 		for (unsigned int i_entity = 0; i_entity < animateEntities.size(); i_entity++)
 		{
 			animateEntities[i_entity]->setPosition(dynamicData[i_frame][i_entity]);
 		}
 		if (i_frame + 1 < times.size() - 1)
 		{
-			nextFrameInterval = times[i_frame + 1] - times[i_frame];
+			nextFrameInterval = (float)(times[i_frame + 1] - times[i_frame]);
 			internalClock.start();
 		}
 		else
 		{
+			//std::cout << "\n";
 			// Program::run() will now always return false and ceises to run this function.
 			nextFrameInterval = std::numeric_limits<float>::infinity();
 		}
@@ -116,23 +210,25 @@ public:
 		running = false;
 	}
 
-	bool isRunning() { return running; }
+	bool isRunning() const { return running; }
+
+	void setRunning(bool run) { running = run; }
 
 private:
 
-	void makeEntities(sptr<Scene> scene)
-	{
-		for (unsigned int i = 0; i < nDynamicParticles; i++)
-		{
-			scene->addEntity(dynamicTypes[i], Color(ColorEnum::BLUE), dynamicData[0][i], dynamicAngles[i], dynamicScales[i], true);
-			animateEntities.push_back(scene->getEntities()[i]);
-			assert(scene->getEntities()[i].use_count() == 2);
-		}
-		for (unsigned int i = 0; i < nStaticParticles; i++)
-		{
-			scene->addEntity(staticTypes[i], Color(ColorEnum::YELLOW, 0.4f), staticData[i], staticAngles[i], staticScales[i], false);
-		}
-	}
+	//void makeEntities(sptr<Scene> scene)
+	//{
+	//	for (unsigned int i = 0; i < nDynamicParticles; i++)
+	//	{
+	//		scene->addSurface(dynamicTypes[i], Color(ColorEnum::BLUE), dynamicData[0][i], dynamicAngles[i], dynamicScales[i], true);
+	//		animateEntities.push_back(scene->getSurfaces()[i]);
+	//		assert(scene->getSurfaces()[i].use_count() == 2);
+	//	}
+	//	for (unsigned int i = 0; i < nStaticParticles; i++)
+	//	{
+	//		scene->addSurface(staticTypes[i], Color(ColorEnum::YELLOW, 0.4f), staticData[i], staticAngles[i], staticScales[i], false);
+	//	}
+	//}
 
 	void loadHeader(std::ifstream& ifile)
 	{
@@ -171,7 +267,7 @@ private:
 				if (!std::getline(ifile, staticLine)) { throw(std::exception("ERROR in Animator::loadHeader: Could not load static data set from header\n")); }
 				std::istringstream staticIss(staticLine);
 				MeshEnum type; glm::vec3 pos; glm::vec3 rot; glm::vec3 scale;
-				if (readType(staticIss, type)) { staticTypes.push_back(type);  }	
+				if (readType(staticIss, type)) { staticTypes.push_back(type); }
 				if (readVec3(staticIss, pos)) { staticData.push_back(pos); }
 				if (readVec3(staticIss, rot)) { staticAngles.push_back(rot); }
 				if (readVec3(staticIss, scale)) { staticScales.push_back(scale); }
@@ -184,7 +280,7 @@ private:
 			for (unsigned int i = 0; i < nDynamicParticles; i++)
 			{
 				if (readType(dynamicIss, dynType)) { dynamicTypes.push_back(dynType); }
-				if (readVec3(dynamicIss, dynRot))   { dynamicAngles.push_back(dynRot); }
+				if (readVec3(dynamicIss, dynRot)) { dynamicAngles.push_back(dynRot); }
 				if (readVec3(dynamicIss, dynScale)) { dynamicScales.push_back(dynScale); }
 			}
 		}
@@ -228,7 +324,7 @@ private:
 			std::string word;
 			if (iss >> word)
 			{
-				if (word == "Ball") { type = MeshEnum::Ball; }
+				if (word == "Ball") { type = MeshEnum::Sphere; }
 				else if (word == "Cube") { type = MeshEnum::Cube; }
 				else { throw(std::exception("ERROR! Invalid type specified")); }
 				return true;
@@ -281,7 +377,7 @@ private:
 	}
 
 	unsigned int nDynamicParticles, nStaticParticles, nFrames;
-	
+
 	std::vector<std::vector<glm::vec3>> dynamicData;
 	std::vector<MeshEnum> dynamicTypes;
 	std::vector<glm::vec3> dynamicAngles;
@@ -298,9 +394,10 @@ private:
 	double t;
 	Clock internalClock;
 	bool running;
-	unsigned int i_frame;
+	int i_frame;
 	float nextFrameInterval;
 	float lastFrameTime;
+	unsigned int nextOutputFrame;
 
 };
 

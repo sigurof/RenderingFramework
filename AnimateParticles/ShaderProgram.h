@@ -20,9 +20,26 @@ namespace ML {
 
 				vertexCode = readShaderSource(vertexPath);
 				fragmentCode = readShaderSource(fragmentPath);
+				try
+				{
+					compileShader(vShaderID, vertexCode);
 
-				compileShader(vShaderID, vertexCode);
-				compileShader(fShaderID, fragmentCode);
+				}
+				catch (const std::exception& err)
+				{
+					std::cout << "vertex shader:\n";
+					throw err;
+				}
+				try
+				{
+					compileShader(fShaderID, fragmentCode);
+
+				}
+				catch (const std::exception& err)
+				{
+					std::cout << "fragment shader:\n";
+					throw err;
+				}
 
 				/* CREATE AND LINK PROGRAM */
 				ID = glCreateProgram();
@@ -43,6 +60,7 @@ namespace ML {
 
 		void start() const 
 		{
+			//currentlyActiveShader = this;
 			glUseProgram(ID);
 		}
 
@@ -110,6 +128,7 @@ namespace ML {
 		unsigned int ID;
 		unsigned int vShaderID;
 		unsigned int fShaderID;
+
 
 	private:
 

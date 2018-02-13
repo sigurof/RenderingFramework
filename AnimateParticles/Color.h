@@ -41,7 +41,7 @@ namespace ML {
 				rgb = glm::vec3(1, 1, 0);
 				break;
 			case WHITE:
-				rgb = glm::vec3(1, 1, 1);
+				rgb = glm::vec3(1.0, 1.0, 1.0);
 				break;
 			case BLACK:
 				rgb = glm::vec3(0, 0, 0);

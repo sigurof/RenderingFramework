@@ -114,7 +114,7 @@
 //	Loader loader;
 //
 //	std::map <MeshEnum, unsigned int> instancesOfMesh;
-//	std::map<MeshEnum, MeshIdentifier> meshes;
+//	std::map<MeshEnum, VAOHandle> meshes;
 //
 //};
 //

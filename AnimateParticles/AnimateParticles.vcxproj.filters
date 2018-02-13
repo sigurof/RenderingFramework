@@ -35,22 +35,19 @@
     <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\shader.vs">
       <Filter>shader_source</Filter>
     </None>
-    <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\static.fs">
-      <Filter>shader_source</Filter>
-    </None>
-    <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\static.vs">
-      <Filter>shader_source</Filter>
-    </None>
-    <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\staticwithcolor.vs">
-      <Filter>shader_source</Filter>
-    </None>
-    <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\textureShader.fs">
-      <Filter>shader_source</Filter>
-    </None>
-    <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\textureShader.vs">
-      <Filter>shader_source</Filter>
-    </None>
     <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\xywcolor.vs">
+      <Filter>shader_source</Filter>
+    </None>
+    <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\light.fs">
+      <Filter>shader_source</Filter>
+    </None>
+    <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\light.vs">
+      <Filter>shader_source</Filter>
+    </None>
+    <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\line.fs">
+      <Filter>shader_source</Filter>
+    </None>
+    <None Include="..\..\..\OpenGL\learnopengl\learnopengl\shader_source\line.vs">
       <Filter>shader_source</Filter>
     </None>
   </ItemGroup>
@@ -82,12 +79,6 @@
     <ClInclude Include="Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -100,13 +91,7 @@
     <ClInclude Include="Animator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshIdentifier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Color.h">
@@ -128,6 +113,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="enums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleShapeLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VAOHandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="flat_unordered_map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

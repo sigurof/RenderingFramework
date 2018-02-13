@@ -22,10 +22,78 @@ namespace ML {
 			{
 				delete textures[i];
 			}
-
 		};
+
+		VAOHandle loadOBJFile(const std::string& filePath)
+		{
+			try
+			{
+				Clock timer;
+				timer.start();
+				std::vector<float> verticesArray;
+				std::vector<float> texturesArray;
+				std::vector<float> normalsArray;
+
+				std::ifstream file(filePath);
+				if (!file.good()) { throw(std::exception("ERROR: Could not open file\n")); }
+				std::string line;
+				std::vector<glm::vec3> vertices;
+				std::vector<glm::vec2> textures;
+				std::vector<glm::vec3> normals;
+				std::vector<unsigned int> indices;
+				std::vector<std::vector<std::string>> faceInfo;
+
+				while (std::getline(file, line))	/* Parse lines */
+				{
+					std::istringstream iss(line);
+					std::vector<std::string> words; std::string word; int i = 0;
+					while (iss >> word) { words.push_back(word); }
+					if (words[0] == "v")//vertex
+					{
+						vertices.push_back(glm::vec3(std::stof(words[1]), std::stof(words[2]), std::stof(words[3])));
+					}
+					else if (words[0] == "vt")//vertex texture
+					{
+						textures.push_back(glm::vec2(std::stof(words[1]), std::stof(words[2])));
+					}
+					else if (words[0] == "vn")//vertex normal
+					{
+						normals.push_back(glm::vec3(std::stof(words[1]), std::stof(words[2]), std::stof(words[3])));
+					}
+					else if (words[0] == "f")//face
+					{
+						faceInfo.push_back(words);
+					}
+				}
+				file.close();
+
+				processFaces(faceInfo, vertices, textures, normals, indices, verticesArray, texturesArray, normalsArray);
+
+				std::cout << "Object loaded in " << timer.elapsedMs() << "ms.\n";
+				return this->loadToVAO(verticesArray, texturesArray, normalsArray, indices);
+			}
+			catch (const std::exception& err)
+			{
+				std::cout << "In loadFromFile\n";
+				throw err;
+			}
+		}
+
+
+		//VAOHandle loadObjModel(const std::string& filePath)
+		//{
+		//	try
+		//	{
+		//		return loadFromFile(filePath);
+		//	}
+		//	catch (const std::exception& err)
+		//	{
+		//		std::cout << "In OBJLoader::loadObjModel\n";
+		//		throw err;
+		//	}
+		//}
 		
-		MeshIdentifier loadToVAO(std::vector<float>& vertices, std::vector<float>& textureCoords, std::vector<float>& normals, std::vector<unsigned int>& indices) {
+		VAOHandle loadToVAO(const std::vector<float>& vertices, const std::vector<float>& textureCoords, const std::vector<float>& normals, const std::vector<unsigned int>& indices) {
 			unsigned int* vaoID = createVAO();
 			vaos.push_back(vaoID);	
 			bindIndicesBuffer(indices);
@@ -33,8 +101,44 @@ namespace ML {
 			storeDataInAttributeList(1, 2, textureCoords);
 			storeDataInAttributeList(2, 3, normals);
 			unbindVAO();
-			return MeshIdentifier(*vaoID, (unsigned int)indices.size());
+			return VAOHandle(*vaoID, (unsigned int)indices.size());
 		}
+
+		VAOHandle loadToVAO(const std::shared_ptr<VertexData> data) 
+		{
+			unsigned int index = 0;
+			unsigned int* vaoID = createVAO();
+			vaos.push_back(vaoID);
+			bindIndicesBuffer(data->getIndices());
+			if (data->getVertices().size() > 0)
+			{
+				storeDataInAttributeList(index, 3, data->getVertices());
+				index++;
+			}
+			if (data->getTextureCoords().size() > 0)
+			{
+				storeDataInAttributeList(index, 2, data->getTextureCoords());
+				index++;
+			}
+			if (data->getNormals().size() > 0)
+			{
+				storeDataInAttributeList(index, 3, data->getNormals());
+				index++;
+			}
+			unbindVAO();
+			return VAOHandle(*vaoID, (unsigned int)data->getIndices().size());
+		}
+
+		//VAOHandle load_VN_ToVAO(std::vector<float>& vertices, std::vector<float>& normals, std::vector<unsigned int>& indices) {
+		//	unsigned int* vaoID = createVAO();
+		//	vaos.push_back(vaoID);
+		//	bindIndicesBuffer(indices);
+		//	storeDataInAttributeList(0, 3, vertices);
+		//	storeDataInAttributeList(1, 2, textureCoords);
+		//	storeDataInAttributeList(2, 3, normals);
+		//	unbindVAO();
+		//	return VAOHandle(*vaoID, (unsigned int)indices.size());
+		//}
 
 		unsigned int loadTexture(std::string& path, ImageFormatEnum format) {
 			Texture texture(path, format);
@@ -48,12 +152,25 @@ namespace ML {
 			return *textureID;
 		}
 
-		void bindIndicesBuffer(std::vector<unsigned int>& indices) {
-			unsigned int* eboID = new unsigned int;
-			vbos.push_back(eboID);
-			glGenBuffers(1, eboID);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *eboID);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+		void bindIndicesBuffer(const std::vector<unsigned int>& indices) 
+		{
+			try
+			{
+				if (indices.size() == 0)
+				{
+					throw std::exception("ERROR! indices must have non-zero length!");
+				}
+				unsigned int* eboID = new unsigned int;
+				vbos.push_back(eboID);
+				glGenBuffers(1, eboID);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *eboID);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+			}
+			catch (const std::exception& err)
+			{
+				std::cout << "In Loader::bindIndicesBuffer\n";
+				throw err;
+			}
 		}
 
 		unsigned int* createVAO() {
@@ -64,7 +181,7 @@ namespace ML {
 		}
 
 		template <class Type>
-		void storeDataInAttributeList(unsigned int attribIndex, unsigned int coordSize, std::vector<Type>& data) {
+		void storeDataInAttributeList(unsigned int attribIndex, unsigned int coordSize, const std::vector<Type>& data) {
 			unsigned int* vboID = new unsigned int;
 			glGenBuffers(1, vboID);
 			vbos.push_back(vboID);
@@ -99,6 +216,62 @@ namespace ML {
 		std::vector<unsigned int*> vaos;
 		std::vector<unsigned int*> vbos;
 		std::vector<unsigned int*> textures;
+
+		
+		static void processFaces(std::vector<std::vector<std::string>>& faceInfos,
+			std::vector<glm::vec3>& vertices,
+			std::vector<glm::vec2>& textures,
+			std::vector<glm::vec3>& normals,
+			std::vector<unsigned int>& indices,
+			std::vector<float>& verticesArray,
+			std::vector<float>& texturesArray,
+			std::vector<float>& normalsArray)
+		{
+			try
+			{
+				unsigned int index = 0;
+				//TripleMap<int, int, int, int> vtn_vs_index;
+				std::map<std::vector<int>, int> vtn_vs_index;
+				for each (std::vector<std::string> faceInfo in faceInfos)// Face
+				{
+					for (int i = 1; i < faceInfo.size(); i++)
+					{
+						std::istringstream vertexStream(faceInfo[i]);
+						std::string vtn_string;
+						std::vector<int> vtn; /* vertex texture normal */
+						int j(0);
+						while (std::getline(vertexStream, vtn_string, '/')) { j++; vtn.push_back(std::stoi(vtn_string)); }
+						if (!vtn_vs_index[vtn])
+						{
+							vtn_vs_index[vtn] = index;
+							index++;
+
+							verticesArray.push_back((vertices[vtn[0] - 1]).x);
+							verticesArray.push_back((vertices[vtn[0] - 1]).y);
+							verticesArray.push_back((vertices[vtn[0] - 1]).z);
+
+							texturesArray.push_back(textures[vtn[1] - 1].x);
+							texturesArray.push_back(1 - textures[vtn[1] - 1].y);
+
+							normalsArray.push_back(normals[vtn[2] - 1].x);
+							normalsArray.push_back(normals[vtn[2] - 1].y);
+							normalsArray.push_back(normals[vtn[2] - 1].z);
+						}
+						indices.push_back(vtn_vs_index[vtn]);
+
+
+					}
+				}
+			}
+			catch (const std::exception& err)
+			{
+				std::cout << "In processFaces\n";
+				throw err;
+			}
+
+		}
+
+
 	};
 }
 

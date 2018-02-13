@@ -9,18 +9,28 @@ namespace ML {
 	public:
 		Light(){}
 
-		Light(const glm::vec3& pos, const glm::vec3& col) : position(pos), color(col) { }
+		Light(const Model& mod, const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& scale, const Color& col) : color(col)
+		{
+			entity = std::shared_ptr<Entity>(new Entity(mod, pos, rot, scale));
+		}
 
-		Light(const Light& other) : position(other.position), color(other.color) {}
+		Light(const Light& other) = delete;
+		
+		Light& operator=(const Light& other) = delete;
+		//Light(const Light& other) : position(other.position), color(other.color) {}
+		
+		const std::shared_ptr<Entity> getEntity() const { return entity; }
+		const Color& getColor() const { return color; }
+		const glm::vec3& getPosition() const { return entity->getPosition(); }
 
-		const glm::vec3& getPosition() const { return position; };
-		const glm::vec3& getColor() const { return color; }
-		void setPosition(const glm::vec3& pos) { position = pos; }
-		void setColor(const glm::vec3& col) { color = col; }
+		void setColor(const Color& col) { color = col; }
+
 
 	private:
-		glm::vec3 position;
-		glm::vec3 color;
+
+		std::shared_ptr<Entity> entity;
+		Color color;
+
 	};
 
 }

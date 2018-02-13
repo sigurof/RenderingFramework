@@ -40,7 +40,9 @@ namespace ML
 		Window& operator=(const Window&) = delete;
 
 		~Window() {
+#ifdef VERBOSEDESTRUCTORS
 			std::cout << "Window::Destructor\n";
+#endif // VERBOSEDESTRUCTORS
 			if (isOpen())
 			{
 				close();
@@ -105,6 +107,10 @@ namespace ML
 		void enableAlpha() {
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+
+		void disableAlpha() {
+			glDisable(GL_BLEND);
 		}
 
 		int getWidth() const 

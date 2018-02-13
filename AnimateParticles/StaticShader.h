@@ -12,7 +12,7 @@ namespace ML {
 	{
 	public:
 
-		StaticShader() : ShaderProgram(VERTEXPATH, FRAGMENTPATH) {
+		StaticShader(const std::string& vpath, const std::string& fpath) : ShaderProgram(vpath, fpath) {
 			linkProgram();
 			getAllUniformLocations();
 		}
@@ -44,7 +44,7 @@ namespace ML {
 			for (unsigned int i = 0; i < lights.size(); i++)
 			{
 				load3Vector(location_lightPosition, lights[i]->getPosition());
-				load3Vector(location_lightColor, lights[i]->getColor());
+				load3Vector(location_lightColor, lights[i]->getColor().getRgb());
 			}
 		}
 
@@ -58,6 +58,11 @@ namespace ML {
 		void loadSurfaceColor(const Color& color) const
 		{
 			load4Vector(location_color, glm::vec4(color.getRgb(), color.getAlpha()));
+		}
+
+		void loadCameraPosition(const std::shared_ptr<Camera> camera)
+		{
+			load3Vector(location_cameraPosition, camera->getPosition());
 		}
 
 	protected:
@@ -77,13 +82,13 @@ namespace ML {
 			location_shineDamper = getUniformLocation("shineDamper");
 			location_color = getUniformLocation("color");
 			location_textureFraction = getUniformLocation("textureFraction");
+			location_cameraPosition = getUniformLocation("cameraPosition");
 
 
 		}
 
+
 	private:
-		static const std::string VERTEXPATH;
-		static const std::string FRAGMENTPATH;
 
 		void linkProgram() {
 			int success;
@@ -115,8 +120,7 @@ namespace ML {
 		unsigned int location_reflectivity;
 		unsigned int location_color;
 		unsigned int location_textureFraction;
-
-
+		unsigned int location_cameraPosition;
 
 	};
 

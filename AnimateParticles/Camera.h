@@ -25,38 +25,40 @@ namespace ML {
 		Camera& operator=(const Camera&) = delete;
 
 		~Camera() { 
+#ifdef VERBOSEDESTRUCTORS
 			std::cout << "Camera::Destructor\n";
+#endif // VERBOSEDESTRUCTORS
 			if (currentlyActiveCamera == this)
 			{
 				currentlyActiveCamera = nullptr;
 			}
 		}
 		
-		float calculateSpeed() {
-			return 10.0f*dt;
-		}
+		//float calculateSpeed() {
+		//	return 10.0f*dt;
+		//}
 
 		void move(const DirectionEnum dir) {
-			speed = calculateSpeed();
+			//speed = calculateSpeed();
 			switch (dir)
 			{
 			case DirectionEnum::Forwards:
-				position += speed*  fwDirection;
+				position += speed*dt * fwDirection;
 				break;
 			case DirectionEnum::Backwards:
-				position -= speed * fwDirection;
+				position -= speed * dt* fwDirection;
 				break;
 			case DirectionEnum::Left:
-				position += speed  *rtDirection;
+				position += speed* dt  *rtDirection;
 				break;
 			case DirectionEnum::Right:
-				position -= speed  *rtDirection;
+				position -= speed* dt  *rtDirection;
 				break;
 			case DirectionEnum::Up:
-				position += speed * upDirection;
+				position += speed * dt* upDirection;
 				break;
 			case DirectionEnum::Down:
-				position -= speed * upDirection;
+				position -= speed * dt* upDirection;
 				break;
 			default:
 				break;
@@ -69,8 +71,12 @@ namespace ML {
 		const glm::vec3& getPosition() const { return position; }
 		const glm::vec3& getTarget() const { return target; }
 		const glm::vec3& getUpDirection() const { return upDirection; }
+		float getSpeed() const { return speed; }
+
 		
 		void setDt(float time) { dt = time; }
+
+		void setSpeed(const float s) { speed = s; }
 
 		void changeViewDirection(const float yaw, const float pitch) 
 		{
